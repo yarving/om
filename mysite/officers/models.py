@@ -7,8 +7,20 @@ from django.db import models
 
 class Officer(models.Model):
     """docstring for Pool."""
-    name = models.CharField('姓名', max_length=200)
+    name = models.CharField('姓名', max_length=20)
     pub_date = models.DateTimeField('更新日期')
+    gender_choices = (
+        ('男', '男'),
+        ('女', '女'),
+    )
+    birthday = models.DateField('出生日期')
+    gender = models.CharField('性别', max_length=2,
+                              choices=gender_choices,
+                              default='男')
+    native = models.CharField('籍贯', max_length=20, default='湖南永州')
+    nation = models.CharField('民族', max_length=20, default='汉')
+    duty_level = models.CharField('职务层次', max_length=20, default='无')
+    id_number = models.CharField('身份证号', max_length=18, default='无')
 
     def __str__(self):
         return self.name

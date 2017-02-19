@@ -13,7 +13,10 @@ class OfficerAdmin(admin.ModelAdmin):
     """docstring for PollAdmin."""
     fieldsets = [
         (None, {'fields': ['name']}),
-        ('Date information', {'fields': ['pub_date'], 'classes':['collapse']})
+        ('个人基本信息',
+         {'fields': ['birthday', 'gender', 'native', 'nation', 'duty_level', 'id_number',
+                     'pub_date'],
+          'classes':['collapse']})
     ]
     inlines = [ChoiceInline]
     list_display = ('name', 'pub_date', 'was_published_recently')
