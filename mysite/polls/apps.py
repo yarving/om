@@ -5,5 +5,6 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class PoolConfig(AppConfig):
-    name = 'pool'
+class OfficerConfig(AppConfig):
+    name = 'polls'
+    verbose_name = '干部信息'
