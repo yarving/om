@@ -20,6 +20,10 @@ class Officer(models.Model):
     was_published_recently.boolean = True
     was_published_recently.short_description = '是否近期更新?'
 
+    class Meta:
+        verbose_name = '干部'
+        verbose_name_plural = '干部'
+
 
 class Choice(models.Model):
     """docstring for Choice."""
