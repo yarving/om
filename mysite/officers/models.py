@@ -5,11 +5,7 @@ from django.utils import timezone
 from django.db import models
 
 
-def decode(info):
-    return info.decode('utf-8')
-
-
-class Poll(models.Model):
+class Officer(models.Model):
     """docstring for Pool."""
     name = models.CharField('姓名', max_length=200)
     pub_date = models.DateTimeField('更新日期')
@@ -27,7 +23,7 @@ class Poll(models.Model):
 
 class Choice(models.Model):
     """docstring for Choice."""
-    poll = models.ForeignKey(Poll)
+    officer = models.ForeignKey(Officer)
     choice = models.CharField(max_length=200)
     votes = models.IntegerField()
 

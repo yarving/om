@@ -6,5 +6,5 @@ from django.apps import AppConfig
 
 
 class OfficerConfig(AppConfig):
-    name = 'polls'
+    name = 'officers'
     verbose_name = '干部信息'

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from polls.models import Poll, Choice
+from officers.models import Officer, Choice
 
 
 class ChoiceInline(admin.TabularInline):
@@ -8,7 +8,8 @@ class ChoiceInline(admin.TabularInline):
     model = Choice
     extra = 0
 
-class PollAdmin(admin.ModelAdmin):
+
+class OfficerAdmin(admin.ModelAdmin):
     """docstring for PollAdmin."""
     fieldsets = [
         (None, {'fields': ['name']}),
@@ -20,7 +21,6 @@ class PollAdmin(admin.ModelAdmin):
     search_fields = ['question']
     date_hierarchy = 'pub_date'
 
-admin.site.register(Poll, PollAdmin)
-
+admin.site.register(Officer, OfficerAdmin)
 
 admin.site.register(Choice)
