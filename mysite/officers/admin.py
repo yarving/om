@@ -21,7 +21,7 @@ class OfficerAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
     list_display = ('name', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
-    search_fields = ['question']
+    search_fields = ['name']
     date_hierarchy = 'pub_date'
 
 admin.site.register(Officer, OfficerAdmin)
