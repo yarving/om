@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from officers.models import Officer, Choice, Assessment
+from officers.models import Officer, Choice, Assessment, PersonalEvent
 
 
 class ChoiceInline(admin.TabularInline):
@@ -12,6 +12,13 @@ class ChoiceInline(admin.TabularInline):
 class AssessmentInline(admin.TabularInline):
     """年度考核"""
     model = Assessment
+    classes = ['collapse']
+    extra = 0
+
+
+class PersonalEventInline(admin.TabularInline):
+    """年度考核"""
+    model = PersonalEvent
     classes = ['collapse']
     extra = 0
 
@@ -29,12 +36,14 @@ class OfficerAdmin(admin.ModelAdmin):
                      'pub_date'],
           'classes':['collapse']}),
     ]
-    inlines = [AssessmentInline, ChoiceInline]
+    inlines = [AssessmentInline, PersonalEventInline]
     list_display = ('name', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
     search_fields = ['name']
     date_hierarchy = 'pub_date'
 
+# register Officer page
 admin.site.register(Officer, OfficerAdmin)
 
-admin.site.register(Choice)
+# register others can be displayed on home page
+admin.site.register(PersonalEvent)

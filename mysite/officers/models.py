@@ -5,6 +5,23 @@ from django.utils import timezone
 from django.db import models
 
 
+origin_choices = (
+    ('纪委', '纪委'),
+    ('法院', '法院'),
+    ('检察院', '检察院'),
+    ('市政法委', '市政法委'),
+    ('直属工委', '直属工委'),
+    ('巡视联络办', '巡视联络办'),
+    ('信访局', '信访局'),
+    ('公安局', '公安局'),
+    ('人社局', '人社局'),
+    ('市编办', '市编办'),
+    ('计生', '计生'),
+    ('审计', '审计'),
+    ('安监', '安监'),
+)
+
+
 class Officer(models.Model):
     """docstring for Pool."""
     name = models.CharField('姓名', max_length=20)
@@ -58,7 +75,7 @@ class Choice(models.Model):
 
 class Assessment(models.Model):
     """考核"""
-    Officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer)
     year_choices = (
         ('2016', '2016'),
         ('2015', '2015'),
@@ -76,6 +93,8 @@ class Assessment(models.Model):
     level = models.CharField('评定等级', max_length=8,
                              choices=level_choices,
                              default='优秀')
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices)
 
     def __str__(self):
         return self.year + self.level
@@ -83,3 +102,21 @@ class Assessment(models.Model):
     class Meta:
         verbose_name = '年度考核'
         verbose_name_plural = '近三年年度考核'
+
+
+class PersonalEvent(models.Model):
+    """领导干部个人事项报告"""
+    officer = models.ForeignKey(Officer)
+    index = models.CharField('核查批次', max_length=10)
+    status = models.CharField('核查对比情况', max_length=10)
+    express = models.TextField('本人说明及提供汇报情况')
+    result = models.CharField('处理意见', max_length=20)
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices)
+
+    def __str__(self):
+        return self.event
+
+    class Meta:
+        verbose_name = '事项'
+        verbose_name_plural = '领导干部个人事项报告'
