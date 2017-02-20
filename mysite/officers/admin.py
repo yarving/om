@@ -14,7 +14,11 @@ class OfficerAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['name']}),
         ('个人基本信息',
-         {'fields': ['birthday', 'gender', 'native', 'nation', 'duty_level', 'id_number',
+         {'fields': ['gender', 'birthday', 'party_time', 'job_time',
+                     'native', 'nation', 'duty_level', 'id_number',
+                     'full_time_edu', 'full_time_deg',
+                     'part_time_edu', 'part_time_deg',
+                     'job_title', 'manage_field', 'profile',
                      'pub_date'],
           'classes':['collapse']})
     ]

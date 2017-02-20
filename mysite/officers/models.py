@@ -13,14 +13,23 @@ class Officer(models.Model):
         ('男', '男'),
         ('女', '女'),
     )
-    birthday = models.DateField('出生日期')
     gender = models.CharField('性别', max_length=2,
                               choices=gender_choices,
                               default='男')
+    birthday = models.DateField('出生日期')
+    party_time = models.DateField('入党时间')
+    job_time = models.DateField('工作时间')
     native = models.CharField('籍贯', max_length=20, default='湖南永州')
     nation = models.CharField('民族', max_length=20, default='汉')
     duty_level = models.CharField('职务层次', max_length=20, default='无')
     id_number = models.CharField('身份证号', max_length=18, default='无')
+    job_title = models.CharField('工作单位及职务', max_length=50)
+    full_time_edu = models.CharField('全日制学历', max_length=10)
+    full_time_deg = models.CharField('全日制学位', max_length=10)
+    part_time_edu = models.CharField('在职学历', max_length=10, null=True)
+    part_time_deg = models.CharField('在职学位', max_length=10, null=True)
+    manage_field = models.CharField('分管工作', max_length=50)
+    profile = models.TextField('简历', max_length=1000, null=True)
 
     def __str__(self):
         return self.name
