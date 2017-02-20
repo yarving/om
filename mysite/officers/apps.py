@@ -7,4 +7,4 @@ from django.apps import AppConfig
 
 class OfficerConfig(AppConfig):
     name = 'officers'
-    verbose_name = '干部信息'
+    verbose_name = '干部信息库'

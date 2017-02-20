@@ -54,3 +54,32 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice
+
+
+class Assessment(models.Model):
+    """考核"""
+    Officer = models.ForeignKey(Officer)
+    year_choices = (
+        ('2016', '2016'),
+        ('2015', '2015'),
+        ('2014', '2014'),
+    )
+    year = models.CharField('年度', max_length=4,
+                            choices=year_choices,
+                            default='2017')
+    level_choices = (
+        ('优秀', '优秀'),
+        ('称职', '称职'),
+        ('基本称职', '基本称职'),
+        ('不称职', '不称职'),
+    )
+    level = models.CharField('评定等级', max_length=8,
+                             choices=level_choices,
+                             default='优秀')
+
+    def __str__(self):
+        return self.year + self.level
+
+    class Meta:
+        verbose_name = '年度考核'
+        verbose_name_plural = '近三年年度考核'

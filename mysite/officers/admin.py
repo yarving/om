@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from officers.models import Officer, Choice
+from officers.models import Officer, Choice, Assessment
 
 
 class ChoiceInline(admin.TabularInline):
     """docstring for ChoiceInline."""
     model = Choice
+    extra = 0
+
+
+class AssessmentInline(admin.TabularInline):
+    """年度考核"""
+    model = Assessment
+    classes = ['collapse']
     extra = 0
 
 
@@ -20,9 +27,9 @@ class OfficerAdmin(admin.ModelAdmin):
                      'part_time_edu', 'part_time_deg',
                      'job_title', 'manage_field', 'profile',
                      'pub_date'],
-          'classes':['collapse']})
+          'classes':['collapse']}),
     ]
-    inlines = [ChoiceInline]
+    inlines = [AssessmentInline, ChoiceInline]
     list_display = ('name', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
     search_fields = ['name']
