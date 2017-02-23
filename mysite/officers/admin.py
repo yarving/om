@@ -16,8 +16,8 @@ class AssessmentInline(admin.TabularInline):
     extra = 0
 
 
-class PersonalEventInline(admin.TabularInline):
-    """年度考核"""
+class PersonalEventInline(admin.StackedInline):
+    """个人事项报告"""
     model = PersonalEvent
     classes = ['collapse']
     extra = 0
