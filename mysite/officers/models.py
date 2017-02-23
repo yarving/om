@@ -21,6 +21,11 @@ origin_choices = (
     ('安监', '安监'),
 )
 
+yes_or_no_choices = (
+    ('是', '是'),
+    ('否', '否'),
+)
+
 
 class Officer(models.Model):
     """docstring for Pool."""
@@ -120,3 +125,133 @@ class PersonalEvent(models.Model):
     class Meta:
         verbose_name = '事项'
         verbose_name_plural = '领导干部个人事项报告'
+
+
+class EconomicReview(models.Model):
+    """经济责任审查"""
+    officer = models.ForeignKey(Officer)
+    status = models.TextField('审查基本情况')
+    result = models.CharField('处理意见', max_length=20)
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices)
+
+    def __str__(self):
+        return self.status
+
+    class Meta:
+        verbose_name = '事项'
+        verbose_name_plural = '经济责任审查'
+
+
+class PetitionReport(models.Model):
+    """信访举报"""
+    origin_choices = (
+        ('省委组织部督办', '省委组织部督办'),
+        ('领导批示', '领导批示'),
+        ('本市组织部处理', '本市组织部处理'),
+        ('其他单位转交', '其他单位转交'),
+    )
+    petition_choices = (
+        ('正处', '正处'),
+        ('副处', '副处'),
+        ('正科', '正科'),
+    )
+    officer = models.ForeignKey(Officer)
+    name = models.CharField('举报人姓名', max_length=10)
+    profile = models.CharField('举报人单位及职位', max_length=100)
+    origin = models.CharField('举报来源', max_length=20,
+                              choices=origin_choices)
+    level = models.CharField('级别', max_length=10,
+                             choices=petition_choices)
+    content = models.TextField('举报反应主要问题')
+    status = models.TextField('核查情况及处理意见')
+
+    def __str__(self):
+        return self.content
+
+    class Meta:
+        verbose_name = '信访举报'
+        verbose_name_plural = '信访举报事项'
+
+
+class OrganizeProcess(models.Model):
+    """组织处理"""
+    status_choices = (
+        ('诫勉', '诫勉'),
+        ('调整职务', '调整职务'),
+        ('引咎辞职', '引咎辞职'),
+        ('责令辞职', '责令辞职'),
+        ('免职', '免职'),
+        ('降职', '降职'),
+    )
+    officer = models.ForeignKey(Officer)
+    status = models.CharField('受组织处理情况', max_length=10,
+                              choices=status_choices)
+    influence = models.CharField('是否影响使用', max_length=5,
+                                 choices=yes_or_no_choices,
+                                 default='是')
+    start_time = models.DateField('影响起始时间')
+    end_time = models.DateField('影响终止时间')
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices)
+
+    def __str__(self):
+        return self.status
+
+    class Meta:
+        verbose_name = '事项'
+        verbose_name_plural = '组织处理事项'
+
+
+class PartyAffair(models.Model):
+    """党纪、政纪处分"""
+    officer = models.ForeignKey(Officer)
+    index = models.CharField('核查批次', max_length=10)
+    status = models.CharField('核查对比情况', max_length=10)
+    express = models.TextField('本人说明及提供汇报情况')
+    result = models.CharField('处理意见', max_length=20)
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices)
+
+    def __str__(self):
+        return self.event
+
+    class Meta:
+        verbose_name = '党纪政纪处分'
+        verbose_name_plural = '党纪政纪处分'
+
+
+class VetoAffair(models.Model):
+    """一票否决事项"""
+    item_choices = (
+        ('计生', '计生'),
+        ('安全生产', '安全生产'),
+        ('未识别', '未识别'),
+        ('信访', '信访'),
+    )
+    result_choices = (
+        ('通报', '通报'),
+        ('诫勉', '诫勉'),
+        ('党纪处分', '党纪处分'),
+        ('政纪处分', '政纪处分'),
+    )
+    duration_choices = (
+        ('半年', '半年'),
+        ('一年', '一年'),
+        ('两年', '两年'),
+    )
+
+    officer = models.ForeignKey(Officer)
+    item = models.CharField('被否决事项', max_length=10,
+                            choices=item_choices)
+    result = models.CharField('处理情况', max_length=10,
+                              choices=result_choices)
+    duration = models.CharField('影响期限', max_length=10,
+                                choices=duration_choices)
+
+    def __str__(self):
+        return self.event
+
+    class Meta:
+        verbose_name = '事项'
+        verbose_name_plural = '一票否决事项'

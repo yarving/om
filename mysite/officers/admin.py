@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from officers.models import Officer, Choice, Assessment, PersonalEvent
+from officers.models import Officer, Choice, Assessment, PersonalEvent, \
+    EconomicReview, PetitionReport, OrganizeProcess, PartyAffair, VetoAffair
 
 
 class ChoiceInline(admin.TabularInline):
@@ -23,6 +24,41 @@ class PersonalEventInline(admin.StackedInline):
     extra = 0
 
 
+class EconomicReviewInline(admin.StackedInline):
+    """"""
+    model = EconomicReview
+    classes = ['collapse']
+    extra = 0
+
+
+class PetitionReportInline(admin.StackedInline):
+    """"""
+    model = PetitionReport
+    classes = ['collapse']
+    extra = 0
+
+
+class OrganizeProcessInline(admin.StackedInline):
+    """"""
+    model = OrganizeProcess
+    classes = ['collapse']
+    extra = 0
+
+
+class PartyAffairInline(admin.StackedInline):
+    """"""
+    model = PartyAffair
+    classes = ['collapse']
+    extra = 0
+
+
+class VetoAffairInline(admin.StackedInline):
+    """"""
+    model = VetoAffair
+    classes = ['collapse']
+    extra = 0
+
+
 class OfficerAdmin(admin.ModelAdmin):
     """docstring for PollAdmin."""
     fieldsets = [
@@ -36,7 +72,9 @@ class OfficerAdmin(admin.ModelAdmin):
                      'pub_date'],
           'classes':['collapse']}),
     ]
-    inlines = [AssessmentInline, PersonalEventInline]
+    inlines = [AssessmentInline, PersonalEventInline, EconomicReviewInline,
+               PetitionReportInline, OrganizeProcessInline,
+               PartyAffairInline, VetoAffairInline]
     list_display = ('name', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
     search_fields = ['name']
@@ -47,3 +85,8 @@ admin.site.register(Officer, OfficerAdmin)
 
 # register others can be displayed on home page
 admin.site.register(PersonalEvent)
+admin.site.register(EconomicReview)
+admin.site.register(PetitionReport)
+admin.site.register(OrganizeProcess)
+admin.site.register(PartyAffair)
+admin.site.register(VetoAffair)
