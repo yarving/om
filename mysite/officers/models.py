@@ -98,6 +98,22 @@ class Assessment(models.Model):
     level = models.CharField('评定等级', max_length=8,
                              choices=level_choices,
                              default='优秀')
+    origin_choices = (
+        ('纪委', '纪委'),
+        ('法院', '法院'),
+        ('检察院', '检察院'),
+        ('市政法委', '市政法委'),
+        ('直属工委', '直属工委'),
+        ('巡视联络办', '巡视联络办'),
+        ('信访局', '信访局'),
+        ('公安局', '公安局'),
+        ('人社局', '人社局'),
+        ('市编办', '市编办'),
+        ('计生', '计生'),
+        ('审计', '审计'),
+        ('安监', '安监'),
+        ('组织部', '组织部'),
+    )
     origin = models.CharField('信息来源', max_length=10,
                               choices=origin_choices)
 
