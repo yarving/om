@@ -65,7 +65,7 @@ class Officer(models.Model):
 
     class Meta:
         verbose_name = '干部'
-        verbose_name_plural = '干部'
+        verbose_name_plural = '市管干部信息'
 
 
 class Choice(models.Model):
