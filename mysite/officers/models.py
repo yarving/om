@@ -136,7 +136,7 @@ class PersonalEvent(models.Model):
                               choices=origin_choices)
 
     def __str__(self):
-        return self.event
+        return self.index
 
     class Meta:
         verbose_name = '事项'
@@ -230,7 +230,7 @@ class PartyAffair(models.Model):
                               choices=origin_choices)
 
     def __str__(self):
-        return self.event
+        return self.index
 
     class Meta:
         verbose_name = '党纪政纪处分'
@@ -266,7 +266,7 @@ class VetoAffair(models.Model):
                                 choices=duration_choices)
 
     def __str__(self):
-        return self.event
+        return self.item
 
     class Meta:
         verbose_name = '事项'
