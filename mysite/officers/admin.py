@@ -45,14 +45,14 @@ class OrganizeProcessInline(admin.StackedInline):
     extra = 0
 
 
-class PartyAffairInline(admin.StackedInline):
+class PartyAffairInline(admin.TabularInline):
     """"""
     model = PartyAffair
     classes = ['collapse']
     extra = 0
 
 
-class VetoAffairInline(admin.StackedInline):
+class VetoAffairInline(admin.TabularInline):
     """"""
     model = VetoAffair
     classes = ['collapse']

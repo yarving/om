@@ -6,19 +6,20 @@ from django.db import models
 
 
 origin_choices = (
-    ('纪委', '纪委'),
-    ('法院', '法院'),
-    ('检察院', '检察院'),
+    ('市纪委', '市纪委'),
+    ('市法院', '市法院'),
+    ('市检察院', '市检察院'),
     ('市政法委', '市政法委'),
-    ('直属工委', '直属工委'),
-    ('巡视联络办', '巡视联络办'),
-    ('信访局', '信访局'),
-    ('公安局', '公安局'),
-    ('人社局', '人社局'),
+    ('市直属工委', '市直属工委'),
+    ('省委巡视组', '省委巡视组'),
+    ('市信访局', '市信访局'),
+    ('市公安局', '市公安局'),
+    ('市人社局', '市人社局'),
     ('市编办', '市编办'),
-    ('计生', '计生'),
-    ('审计', '审计'),
-    ('安监', '安监'),
+    ('市卫计委', '市卫计委'),
+    ('市审计局', '市审计局'),
+    ('市安监局', '市安监局'),
+    ('市委组织部', '市委组织部'),
 )
 
 yes_or_no_choices = (
@@ -86,6 +87,22 @@ class Assessment(models.Model):
         ('2015', '2015'),
         ('2014', '2014'),
     )
+    origin_choices = (
+        ('市纪委', '市纪委'),
+        ('市法院', '市法院'),
+        ('市检察院', '市检察院'),
+        ('市政法委', '市政法委'),
+        ('市直属工委', '市直属工委'),
+        ('省委巡视组', '省委巡视组'),
+        ('市信访局', '市信访局'),
+        ('市公安局', '市公安局'),
+        ('市人社局', '市人社局'),
+        ('市编办', '市编办'),
+        ('市卫计委', '市卫计委'),
+        ('市审计局', '市审计局'),
+        ('市安监局', '市安监局'),
+        ('市委组织部考核办', '市委组织部考核办'),
+    )
     year = models.CharField('年度', max_length=4,
                             choices=year_choices,
                             default='2017')
@@ -98,6 +115,20 @@ class Assessment(models.Model):
     level = models.CharField('评定等级', max_length=8,
                              choices=level_choices,
                              default='优秀')
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices,
+                              default='市委组织部考核办')
+
+    def __str__(self):
+        return self.officer.name + self.year + self.level
+
+    class Meta:
+        verbose_name = '年度考核'
+        verbose_name_plural = '近三年年度考核'
+
+
+class PersonalEvent(models.Model):
+    """领导干部个人事项报告"""
     origin_choices = (
         ('纪委', '纪委'),
         ('法院', '法院'),
@@ -112,31 +143,19 @@ class Assessment(models.Model):
         ('计生', '计生'),
         ('审计', '审计'),
         ('安监', '安监'),
-        ('组织部', '组织部'),
+        ('市委组织部', '市委组织部'),
     )
-    origin = models.CharField('信息来源', max_length=10,
-                              choices=origin_choices)
-
-    def __str__(self):
-        return self.year + self.level
-
-    class Meta:
-        verbose_name = '年度考核'
-        verbose_name_plural = '近三年年度考核'
-
-
-class PersonalEvent(models.Model):
-    """领导干部个人事项报告"""
     officer = models.ForeignKey(Officer)
     index = models.CharField('核查批次', max_length=10)
     status = models.CharField('核查对比情况', max_length=10)
     express = models.TextField('本人说明及提供汇报情况')
     result = models.CharField('处理意见', max_length=20)
     origin = models.CharField('信息来源', max_length=10,
-                              choices=origin_choices)
+                              choices=origin_choices,
+                              default='市委组织部')
 
     def __str__(self):
-        return self.index
+        return self.officer.name + '-' + self.index
 
     class Meta:
         verbose_name = '事项'
@@ -152,7 +171,7 @@ class EconomicReview(models.Model):
                               choices=origin_choices)
 
     def __str__(self):
-        return self.status
+        return self.officer.name + '-' + self.status
 
     class Meta:
         verbose_name = '事项'
@@ -162,28 +181,22 @@ class EconomicReview(models.Model):
 class PetitionReport(models.Model):
     """信访举报"""
     origin_choices = (
-        ('省委组织部督办', '省委组织部督办'),
+        ('省委组织部干部监督机构批转', '省委组织部干部监督机构批转'),
         ('领导批示', '领导批示'),
-        ('本市组织部处理', '本市组织部处理'),
+        ('市本级干部监督机构受理', '市本级干部监督机构受理'),
         ('其他单位转交', '其他单位转交'),
-    )
-    petition_choices = (
-        ('正处', '正处'),
-        ('副处', '副处'),
-        ('正科', '正科'),
     )
     officer = models.ForeignKey(Officer)
     name = models.CharField('举报人姓名', max_length=10)
     profile = models.CharField('举报人单位及职位', max_length=100)
     origin = models.CharField('举报来源', max_length=20,
                               choices=origin_choices)
-    level = models.CharField('级别', max_length=10,
-                             choices=petition_choices)
-    content = models.TextField('举报反应主要问题')
-    status = models.TextField('核查情况及处理意见')
+    content = models.TextField('举报反映的主要问题')
+    status = models.TextField('调查情况')
+    result = models.CharField('处理意见', max_length=100)
 
     def __str__(self):
-        return self.content
+        return self.officer.name + '-' + self.content
 
     class Meta:
         verbose_name = '信访举报'
@@ -194,7 +207,7 @@ class OrganizeProcess(models.Model):
     """组织处理"""
     status_choices = (
         ('诫勉', '诫勉'),
-        ('调整职务', '调整职务'),
+        ('岗位调整', '岗位调整'),
         ('引咎辞职', '引咎辞职'),
         ('责令辞职', '责令辞职'),
         ('免职', '免职'),
@@ -209,10 +222,11 @@ class OrganizeProcess(models.Model):
     start_time = models.DateField('影响起始时间')
     end_time = models.DateField('影响终止时间')
     origin = models.CharField('信息来源', max_length=10,
-                              choices=origin_choices)
+                              choices=origin_choices,
+                              default='市委组织部')
 
     def __str__(self):
-        return self.status
+        return self.officer.name + '-' + self.status
 
     class Meta:
         verbose_name = '事项'
@@ -222,19 +236,36 @@ class OrganizeProcess(models.Model):
 class PartyAffair(models.Model):
     """党纪、政纪处分"""
     officer = models.ForeignKey(Officer)
-    index = models.CharField('核查批次', max_length=10)
-    status = models.CharField('核查对比情况', max_length=10)
-    express = models.TextField('本人说明及提供汇报情况')
-    result = models.CharField('处理意见', max_length=20)
-    origin = models.CharField('信息来源', max_length=10,
-                              choices=origin_choices)
+    party_choices = (
+        ('警告', '警告'),
+        ('严重警告', '严重警告'),
+        ('撤销党内职务', '撤销党内职务'),
+        ('留党察看', '留党察看'),
+        ('开除党籍', '开除党籍'),
+        ('无', '无'),
+    )
+    party_affir = models.CharField('党纪处分', max_length=20,
+                                   choices=party_choices)
+    politic_choices = (
+        ('警告', '警告'),
+        ('记过', '记过'),
+        ('记大过', '记大过'),
+        ('降级', '降级'),
+        ('撤职', '撤职'),
+        ('开除', '开除'),
+        ('无', '无'),
+    )
+    politic_affir = models.CharField('政纪处分', max_length=20,
+                                     choices=politic_choices)
+    start_time = models.DateField('影响起始时间')
+    end_time = models.DateField('影响终止时间')
 
     def __str__(self):
-        return self.index
+        return self.officer.name
 
     class Meta:
-        verbose_name = '党纪政纪处分'
-        verbose_name_plural = '党纪政纪处分'
+        verbose_name = '纪律处分'
+        verbose_name_plural = '纪律处分'
 
 
 class VetoAffair(models.Model):
@@ -242,7 +273,6 @@ class VetoAffair(models.Model):
     item_choices = (
         ('计生', '计生'),
         ('安全生产', '安全生产'),
-        ('未识别', '未识别'),
         ('信访', '信访'),
     )
     result_choices = (
@@ -251,22 +281,16 @@ class VetoAffair(models.Model):
         ('党纪处分', '党纪处分'),
         ('政纪处分', '政纪处分'),
     )
-    duration_choices = (
-        ('半年', '半年'),
-        ('一年', '一年'),
-        ('两年', '两年'),
-    )
-
     officer = models.ForeignKey(Officer)
     item = models.CharField('被否决事项', max_length=10,
                             choices=item_choices)
     result = models.CharField('处理情况', max_length=10,
                               choices=result_choices)
-    duration = models.CharField('影响期限', max_length=10,
-                                choices=duration_choices)
+    start_time = models.DateField('影响起始时间')
+    end_time = models.DateField('影响终止时间')
 
     def __str__(self):
-        return self.item
+        return self.officer.name
 
     class Meta:
         verbose_name = '事项'
