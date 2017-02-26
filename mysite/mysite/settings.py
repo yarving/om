@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'admin_reorder',
     'officers',
 ]
 
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -58,7 +60,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,6 +105,40 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ADMIN_REORDER = (
+    # Keep original label and models
+    'sites',
+
+    # Rename app
+    # {'app': 'auth', 'label': 'Authorisation'},
+
+    # Reorder app models
+    {'app': 'officers',
+     'models': (
+         'officers.Officer',
+         'officers.PetitionReport',
+         'officers.PersonalEvent',
+         'officers.OrganizeProcess',
+         'officers.PartyAffair',
+         'officers.EconomicReview',
+         'officers.VetoAffair',
+     )},
+
+    # Exclude models
+    # {'app': 'auth', 'models': ('auth.User', )},
+
+    # Cross-linked models
+    # {'app': 'auth', 'models': ('auth.User', 'sites.Site')},
+
+    # models with custom name
+    """
+    {'app': 'auth', 'models': (
+        'auth.Group',
+        {'model': 'auth.User', 'label': 'Staff'},
+
+    )},
+    """
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
