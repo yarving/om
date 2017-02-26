@@ -86,6 +86,47 @@ DATABASES = {
     }
 }
 
+# Suit(theme) config
+SUIT_CONFIG = {
+    # header
+    'ADMIN_NAME': '永州市市管干部监督信息系统',
+    # 'HEADER_DATE_FORMAT': 'l, j. F Y',
+    # 'HEADER_TIME_FORMAT': 'H:i',
+
+    # forms
+    # 'SHOW_REQUIRED_ASTERISK': True,  # Default True
+    # 'CONFIRM_UNSAVED_CHANGES': True, # Default True
+
+    # menu
+    # 'SEARCH_URL': '/admin/auth/user/',
+    'SEARCH_URL': '/admin/officers/officer/',
+    # 'MENU_ICONS': {
+    #    'sites': 'icon-leaf',
+    #    'auth': 'icon-lock',
+    # },
+    # 'MENU_OPEN_FIRST_CHILD': True, # Default True
+    # 'MENU_EXCLUDE': ('auth.group',),
+    'MENU': (
+        'sites',
+        {'app': 'officers',
+         'models': (
+             'officers.Officer',
+             'officers.PetitionReport',
+             'officers.PersonalEvent',
+             'officers.OrganizeProcess',
+             'officers.PartyAffair',
+             'officers.EconomicReview',
+             'officers.VetoAffair',
+         )},
+        {'app': 'auth', 'icon':'icon-lock', 'models': ('user', 'group')},
+    #     {'label': 'Settings', 'icon':'icon-cog', 'models': ('auth.user', 'auth.group')},
+    #     {'label': 'Support', 'icon':'icon-question-sign', 'url': '/support/'},
+    ),
+
+    # misc
+    # 'LIST_PER_PAGE': 15
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
