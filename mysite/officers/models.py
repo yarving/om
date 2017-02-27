@@ -31,7 +31,7 @@ yes_or_no_choices = (
 class Officer(models.Model):
     """docstring for Pool."""
     name = models.CharField('姓名', max_length=20)
-    pub_date = models.DateTimeField('更新日期')
+    pub_date = models.DateTimeField('更新日期', null=True, blank=True)
     gender_choices = (
         ('男', '男'),
         ('女', '女'),
@@ -40,19 +40,32 @@ class Officer(models.Model):
                               choices=gender_choices,
                               default='男')
     birthday = models.DateField('出生日期')
-    party_time = models.DateField('入党时间')
+    party_choices = (
+        ('是', '是'),
+        ('否', '否'),
+    )
+    is_party = models.CharField('是否中共党员', 
+                                max_length=2,
+                                choices=party_choices,
+                                default='是'
+    )
+
+    party_time = models.DateField('入党时间', null=True, blank=True)
     job_time = models.DateField('工作时间')
     native = models.CharField('籍贯', max_length=20, default='湖南永州')
     nation = models.CharField('民族', max_length=20, default='汉')
-    duty_level = models.CharField('职务层次', max_length=20, default='无')
+    duty_level_choices = (
+        ('乡科级正职', '乡科级正职'),
+        ('县处级副职', '县处级副职'),
+        ('县处级正职', '县处级正职'),
+    )
+    duty_level = models.CharField('职务层次', max_length=20, choices=duty_level_choices)
     id_number = models.CharField('身份证号', max_length=18, default='无')
-    job_title = models.CharField('工作单位及职务', max_length=50)
-    full_time_edu = models.CharField('全日制学历', max_length=10)
-    full_time_deg = models.CharField('全日制学位', max_length=10)
+    job_title = models.CharField('工作单位及职务', max_length=50, null=True)
+    full_time_edu = models.CharField('全日制学历', max_length=10, null=True)
+    full_time_deg = models.CharField('全日制学位', max_length=10, null=True)
     part_time_edu = models.CharField('在职学历', max_length=10, null=True)
     part_time_deg = models.CharField('在职学位', max_length=10, null=True)
-    manage_field = models.CharField('分管工作', max_length=50)
-    profile = models.TextField('简历', max_length=1000, null=True)
 
     def __str__(self):
         return self.name
@@ -107,14 +120,15 @@ class Assessment(models.Model):
                             choices=year_choices,
                             default='2017')
     level_choices = (
-        ('优秀', '优秀'),
-        ('称职', '称职'),
         ('基本称职', '基本称职'),
         ('不称职', '不称职'),
     )
     level = models.CharField('评定等级', max_length=8,
                              choices=level_choices,
                              default='优秀')
+    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    start_time = models.DateField('影响起始时间', null=True, blank=True)
+    end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=10,
                               choices=origin_choices,
                               default='市委组织部考核办')
@@ -124,7 +138,7 @@ class Assessment(models.Model):
 
     class Meta:
         verbose_name = '年度考核'
-        verbose_name_plural = '近三年年度考核'
+        verbose_name_plural = '年度考核称职情况'
 
 
 class PersonalEvent(models.Model):
@@ -147,9 +161,12 @@ class PersonalEvent(models.Model):
     )
     officer = models.ForeignKey(Officer)
     index = models.CharField('核查批次', max_length=10)
-    status = models.CharField('核查对比情况', max_length=10)
+    status = models.TextField('核查对比情况')
     express = models.TextField('本人说明及提供汇报情况')
-    result = models.CharField('处理意见', max_length=20)
+    result = models.TextField('处理意见')
+    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    start_time = models.DateField('影响起始时间', null=True, blank=True)
+    end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=10,
                               choices=origin_choices,
                               default='市委组织部')
@@ -167,6 +184,9 @@ class EconomicReview(models.Model):
     officer = models.ForeignKey(Officer)
     status = models.TextField('审查基本情况')
     result = models.CharField('处理意见', max_length=20)
+    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    start_time = models.DateField('影响起始时间', null=True, blank=True)
+    end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=10,
                               choices=origin_choices)
 
@@ -193,7 +213,10 @@ class PetitionReport(models.Model):
                               choices=origin_choices)
     content = models.TextField('举报反映的主要问题')
     status = models.TextField('调查情况')
-    result = models.CharField('处理意见', max_length=100)
+    result = models.TextField('处理意见')
+    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    start_time = models.DateField('影响起始时间', null=True, blank=True)
+    end_time = models.DateField('影响终止时间', null=True, blank=True)
 
     def __str__(self):
         return self.officer.name + '-' + self.content
@@ -257,8 +280,9 @@ class PartyAffair(models.Model):
     )
     politic_affir = models.CharField('政纪处分', max_length=20,
                                      choices=politic_choices)
-    start_time = models.DateField('影响起始时间')
-    end_time = models.DateField('影响终止时间')
+    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, default='是')
+    start_time = models.DateField('影响起始时间', null=True, blank=True)
+    end_time = models.DateField('影响终止时间', null=True, blank=True)
 
     def __str__(self):
         return self.officer.name
@@ -286,8 +310,10 @@ class VetoAffair(models.Model):
                             choices=item_choices)
     result = models.CharField('处理情况', max_length=10,
                               choices=result_choices)
-    start_time = models.DateField('影响起始时间')
-    end_time = models.DateField('影响终止时间')
+    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, default='是', blank=True)
+    start_time = models.DateField('影响起始时间', null=True, blank=True)
+    end_time = models.DateField('影响终止时间', null=True, blank=True)
+
 
     def __str__(self):
         return self.officer.name

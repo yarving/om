@@ -10,7 +10,7 @@ class ChoiceInline(admin.TabularInline):
     extra = 0
 
 
-class AssessmentInline(admin.TabularInline):
+class AssessmentInline(admin.StackedInline):
     """年度考核"""
     model = Assessment
     classes = ['collapse']
@@ -64,12 +64,11 @@ class OfficerAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['name']}),
         ('个人基本信息',
-         {'fields': ['gender', 'birthday', 'party_time', 'job_time',
+         {'fields': ['gender', 'birthday', 'is_party', 'party_time', 'job_time',
                      'native', 'nation', 'duty_level', 'id_number',
                      'full_time_edu', 'full_time_deg',
                      'part_time_edu', 'part_time_deg',
-                     'job_title', 'manage_field', 'profile',
-                     'pub_date'],
+                     'job_title', 'pub_date'],
           'classes':['collapse']}),
     ]
     inlines = [AssessmentInline, PersonalEventInline, EconomicReviewInline,
