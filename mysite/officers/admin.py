@@ -69,7 +69,7 @@ class OfficerAdmin(admin.ModelAdmin):
          {'fields': ['gender', 'birthday', 'is_party', 'party_time', 'job_time',
                      'native', 'nation', 'duty_level', 'id_number',
                      'full_time_edu', 'full_time_deg',
-                     'part_time_edu', 'part_time_deg',
+                     'part_time_edu', 'part_time_deg', 'forbidden_start', 'forbidden_end',
                      'job_title', 'pub_date'],
           'classes':['collapse']}),
     ]
@@ -78,20 +78,12 @@ class OfficerAdmin(admin.ModelAdmin):
                PartyAffairInline, VetoAffairInline]
     list_display = ('name', 'gender', 'birthday', 'is_party', 'party_time',
                     'job_time', 'native', 'nation', 'duty_level',
-                    'job_title', 'pub_date', 'was_published_recently')
-    list_filter = ['pub_date']
+                    'job_title', 'pub_date', 'was_able_promotion')
+    from officers.filters import PromotionFilter
+    list_filter = ['pub_date', PromotionFilter]
     search_fields = ['name']
     date_hierarchy = 'pub_date'
-    actions = [
-        export_as_csv_action(
-            "导出",
-#             fields=['name', 'gender', 'birthday', 'is_party', 'party_time', 'job_time',
-#                     'native', 'nation', 'duty_level', 'id_number',
-#                     'full_time_edu', 'full_time_deg',
-#                     'part_time_edu', 'part_time_deg',
-#                     'job_title']
-        )
-    ]
+    actions = [ export_as_csv_action( "导出",), ]
 
 # register Officer page
 admin.site.register(Officer, OfficerAdmin)

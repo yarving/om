@@ -40,14 +40,14 @@ class Officer(models.Model):
                               choices=gender_choices,
                               default='男')
     birthday = models.DateField('出生日期')
+    forbidden_start = models.DateField('影响提拔起始时间', null=True, blank=True)
+    forbidden_end = models.DateField('影响提拔截止时间', null=True, blank=True)
     party_choices = (
         ('是', '是'),
         ('否', '否'),
     )
-    is_party = models.CharField('是否中共党员',
-                                max_length=2,
-                                choices=party_choices,
-                                default='是'
+    is_party = models.CharField(
+        '是否中共党员', max_length=2, choices=party_choices, default='是',
     )
 
     party_time = models.DateField('入党时间', null=True, blank=True)
@@ -66,7 +66,9 @@ class Officer(models.Model):
         ('副厅级领导干部', '副厅级领导干部'),
         ('副厅级非领导干部', '副厅级非领导干部'),
     )
-    duty_level = models.CharField('职务层次', max_length=20, choices=duty_level_choices)
+    duty_level = models.CharField(
+        '职务层次', max_length=20, choices=duty_level_choices
+    )
     id_number = models.CharField('身份证号', max_length=18, default='无')
     job_title = models.CharField('工作单位及职务', max_length=50, null=True)
     full_time_edu = models.CharField('全日制学历', max_length=10, null=True)
@@ -77,21 +79,25 @@ class Officer(models.Model):
     def __str__(self):
         return self.name
 
-    def was_published_recently(self):
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=7)
+    def was_able_promotion(self):
+        if (self.forbidden_end is None) or (self.forbidden_end is None):
+            return True
 
-    was_published_recently.admin_order_field = 'pub_date'
-    was_published_recently.boolean = True
-    was_published_recently.short_description = '是否近期更新?'
+        return not (self.forbidden_start <= datetime.datetime.now().date() <= self.forbidden_end)
+
+    was_able_promotion.admin_order_field = 'forbidden_start'
+    was_able_promotion.boolean = True
+    was_able_promotion.short_description = '是否可提拔?'
 
     class Meta:
         verbose_name = '干部'
         verbose_name_plural = '市管干部信息'
 
 
+
 class Choice(models.Model):
     """docstring for Choice."""
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     choice = models.CharField(max_length=200)
     votes = models.IntegerField()
 
@@ -101,7 +107,7 @@ class Choice(models.Model):
 
 class Assessment(models.Model):
     """考核"""
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     year_choices = (
         ('2016', '2016'),
         ('2015', '2015'),
@@ -134,7 +140,9 @@ class Assessment(models.Model):
     level = models.CharField('评定等级', max_length=8,
                              choices=level_choices,
                              default='优秀')
-    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    is_influence = models.CharField(
+        '是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True
+    )
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=10,
@@ -143,6 +151,15 @@ class Assessment(models.Model):
 
     def __str__(self):
         return self.officer.name + self.year + self.level
+
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(Assessment, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = '年度考核'
@@ -167,12 +184,13 @@ class PersonalEvent(models.Model):
         ('安监', '安监'),
         ('市委组织部', '市委组织部'),
     )
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     index = models.CharField('核查批次', max_length=10)
     status = models.TextField('核查对比情况')
     express = models.TextField('本人说明及提供汇报情况')
     result = models.TextField('处理意见')
-    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    is_influence = models.CharField(
+        '是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=10,
@@ -182,6 +200,15 @@ class PersonalEvent(models.Model):
     def __str__(self):
         return self.officer.name + '-' + self.index
 
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(PersonalEvent, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = '事项'
         verbose_name_plural = '领导干部个人事项报告'
@@ -189,10 +216,11 @@ class PersonalEvent(models.Model):
 
 class EconomicReview(models.Model):
     """经济责任审查"""
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     status = models.TextField('审查基本情况')
     result = models.CharField('处理意见', max_length=20)
-    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    is_influence = models.CharField(
+        '是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=10,
@@ -200,6 +228,15 @@ class EconomicReview(models.Model):
 
     def __str__(self):
         return self.officer.name + '-' + self.status
+
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(EconomicReview, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = '事项'
@@ -214,7 +251,7 @@ class PetitionReport(models.Model):
         ('市本级干部监督机构受理', '市本级干部监督机构受理'),
         ('其他单位转交', '其他单位转交'),
     )
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     name = models.CharField('举报人姓名', max_length=10)
     profile = models.CharField('举报人单位及职位', max_length=100)
     report_origin = models.CharField('举报来源', max_length=20,
@@ -223,7 +260,8 @@ class PetitionReport(models.Model):
     content = models.TextField('举报反映的主要问题')
     status = models.TextField('调查情况')
     result = models.TextField('处理意见')
-    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
+    is_influence = models.CharField(
+        '是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
     origin = models.CharField('信息来源', max_length=20,
@@ -232,6 +270,15 @@ class PetitionReport(models.Model):
 
     def __str__(self):
         return self.officer.name + '-' + self.content
+
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(PetitionReport, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = '信访举报'
@@ -248,7 +295,7 @@ class OrganizeProcess(models.Model):
         ('免职', '免职'),
         ('降职', '降职'),
     )
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     status = models.CharField('受组织处理情况', max_length=10,
                               choices=status_choices)
     influence = models.CharField('是否影响使用', max_length=5,
@@ -263,6 +310,15 @@ class OrganizeProcess(models.Model):
     def __str__(self):
         return self.officer.name + '-' + self.status
 
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(OrganizeProcess, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = '事项'
         verbose_name_plural = '组织处理事项'
@@ -270,7 +326,7 @@ class OrganizeProcess(models.Model):
 
 class PartyAffair(models.Model):
     """纪律处分"""
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     affairs_choices = (
         ('党内警告', '党内警告'),
         ('党内严重警告', '党内严重警告'),
@@ -284,14 +340,27 @@ class PartyAffair(models.Model):
         ('行政撤职', '行政撤职'),
         ('行政开除', '行政开除'),
     )
-    affair = models.CharField('纪律处分', max_length=20, choices=affairs_choices, null=True, blank=True)
-    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, default='是')
+    affair = models.CharField(
+        '纪律处分', max_length=20,
+        choices=affairs_choices, null=True, blank=True)
+    is_influence = models.CharField(
+        '是否影响使用', max_length=4, choices=yes_or_no_choices, default='是')
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
-    origin = models.CharField('信息来源', max_length=10, choices=origin_choices, default='市委组织部')
+    origin = models.CharField(
+        '信息来源', max_length=10, choices=origin_choices, default='市委组织部')
 
     def __str__(self):
         return self.officer.name
+
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(PartyAffair, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = '纪律处分'
@@ -311,19 +380,30 @@ class VetoAffair(models.Model):
         ('党纪处分', '党纪处分'),
         ('政纪处分', '政纪处分'),
     )
-    officer = models.ForeignKey(Officer)
+    officer = models.ForeignKey(Officer, verbose_name='干部')
     item = models.CharField('被否决事项', max_length=10,
                             choices=item_choices)
     result = models.CharField('处理情况', max_length=10,
                               choices=result_choices)
-    is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, default='是', blank=True)
+    is_influence = models.CharField(
+        '是否影响使用', max_length=4,
+        choices=yes_or_no_choices, default='是', blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
-    origin = models.CharField('信息来源', max_length=10, choices=origin_choices, default='市委组织部')
-
+    origin = models.CharField(
+        '信息来源', max_length=10, choices=origin_choices, default='市委组织部')
 
     def __str__(self):
         return self.officer.name
+
+    def save(self, *args, **kwargs):
+        if (self.officer.forbidden_start is None) or (self.officer.forbidden_start > self.start_time):
+            self.officer.forbidden_start = self.start_time
+            self.officer.save()
+        if (self.officer.forbidden_end is None) or (self.officer.forbidden_end < self.end_time):
+            self.officer.forbidden_end = self.end_time
+            self.officer.save()
+        super(VetoAffair, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = '事项'
