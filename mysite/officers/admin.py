@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+
 from officers.models import Officer, Choice, Assessment, PersonalEvent, \
     EconomicReview, PetitionReport, OrganizeProcess, PartyAffair, VetoAffair
-
-
-def export_csv(modeladmin, request, queryset):
-    import csv
-    from django.utils.encoding import smart_str
-
-    return ''
-export_csv.short_description = "导出为CSV"
+from officers.actions import export_as_csv_action
 
 
 class ChoiceInline(admin.TabularInline):
@@ -82,11 +76,22 @@ class OfficerAdmin(admin.ModelAdmin):
     inlines = [AssessmentInline, PersonalEventInline, EconomicReviewInline,
                PetitionReportInline, OrganizeProcessInline,
                PartyAffairInline, VetoAffairInline]
-    list_display = ('name', 'pub_date', 'was_published_recently')
+    list_display = ('name', 'gender', 'birthday', 'is_party', 'party_time',
+                    'job_time', 'native', 'nation', 'duty_level',
+                    'job_title', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
     search_fields = ['name']
     date_hierarchy = 'pub_date'
-    actions = [export_csv, ]
+    actions = [
+        export_as_csv_action(
+            "导出",
+#             fields=['name', 'gender', 'birthday', 'is_party', 'party_time', 'job_time',
+#                     'native', 'nation', 'duty_level', 'id_number',
+#                     'full_time_edu', 'full_time_deg',
+#                     'part_time_edu', 'part_time_deg',
+#                     'job_title']
+        )
+    ]
 
 # register Officer page
 admin.site.register(Officer, OfficerAdmin)

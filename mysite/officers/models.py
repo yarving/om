@@ -44,7 +44,7 @@ class Officer(models.Model):
         ('是', '是'),
         ('否', '否'),
     )
-    is_party = models.CharField('是否中共党员', 
+    is_party = models.CharField('是否中共党员',
                                 max_length=2,
                                 choices=party_choices,
                                 default='是'
@@ -208,7 +208,7 @@ class EconomicReview(models.Model):
 
 class PetitionReport(models.Model):
     """信访举报"""
-    origin_choices = (
+    report_origin_choices = (
         ('省委组织部干部监督机构批转', '省委组织部干部监督机构批转'),
         ('领导批示', '领导批示'),
         ('市本级干部监督机构受理', '市本级干部监督机构受理'),
@@ -217,15 +217,16 @@ class PetitionReport(models.Model):
     officer = models.ForeignKey(Officer)
     name = models.CharField('举报人姓名', max_length=10)
     profile = models.CharField('举报人单位及职位', max_length=100)
-    origin = models.CharField('举报来源', max_length=20,
-                              choices=origin_choices)
+    report_origin = models.CharField('举报来源', max_length=20,
+                                     choices=report_origin_choices,
+                                     default='市本级干部监督机构受理')
     content = models.TextField('举报反映的主要问题')
     status = models.TextField('调查情况')
     result = models.TextField('处理意见')
     is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
-    origin = models.CharField('信息来源', max_length=10,
+    origin = models.CharField('信息来源', max_length=20,
                               choices=origin_choices,
                               default='市委组织部')
 
