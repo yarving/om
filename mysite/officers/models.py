@@ -55,9 +55,16 @@ class Officer(models.Model):
     native = models.CharField('籍贯', max_length=20, default='湖南永州')
     nation = models.CharField('民族', max_length=20, default='汉')
     duty_level_choices = (
-        ('乡科级正职', '乡科级正职'),
-        ('县处级副职', '县处级副职'),
-        ('县处级正职', '县处级正职'),
+        ('副科级领导干部', '副科级领导干部'),
+        ('副科级非领导干部', '副科级非领导干部'),
+        ('正科级领导干部', '正科级领导干部'),
+        ('正科级非领导干部', '正科级非领导干部'),
+        ('副处级领导干部', '副处级领导干部'),
+        ('副处级非领导干部', '副处级非领导干部'),
+        ('正处级领导干部', '正处级领导干部'),
+        ('正处级非领导干部', '正处级非领导干部'),
+        ('副厅级领导干部', '副厅级领导干部'),
+        ('副厅级非领导干部', '副厅级非领导干部'),
     )
     duty_level = models.CharField('职务层次', max_length=20, choices=duty_level_choices)
     id_number = models.CharField('身份证号', max_length=18, default='无')
@@ -122,6 +129,7 @@ class Assessment(models.Model):
     level_choices = (
         ('基本称职', '基本称职'),
         ('不称职', '不称职'),
+        ('不定等', '不定等'),
     )
     level = models.CharField('评定等级', max_length=8,
                              choices=level_choices,
@@ -217,6 +225,9 @@ class PetitionReport(models.Model):
     is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
+    origin = models.CharField('信息来源', max_length=10,
+                              choices=origin_choices,
+                              default='市委组织部')
 
     def __str__(self):
         return self.officer.name + '-' + self.content
@@ -257,32 +268,26 @@ class OrganizeProcess(models.Model):
 
 
 class PartyAffair(models.Model):
-    """党纪、政纪处分"""
+    """纪律处分"""
     officer = models.ForeignKey(Officer)
-    party_choices = (
-        ('警告', '警告'),
-        ('严重警告', '严重警告'),
+    affairs_choices = (
+        ('党内警告', '党内警告'),
+        ('党内严重警告', '党内严重警告'),
         ('撤销党内职务', '撤销党内职务'),
         ('留党察看', '留党察看'),
         ('开除党籍', '开除党籍'),
-        ('无', '无'),
+        ('行政警告', '行政警告'),
+        ('行政记过', '行政记过'),
+        ('行政记大过', '行政记大过'),
+        ('行政降级', '行政降级'),
+        ('行政撤职', '行政撤职'),
+        ('行政开除', '行政开除'),
     )
-    party_affir = models.CharField('党纪处分', max_length=20,
-                                   choices=party_choices)
-    politic_choices = (
-        ('警告', '警告'),
-        ('记过', '记过'),
-        ('记大过', '记大过'),
-        ('降级', '降级'),
-        ('撤职', '撤职'),
-        ('开除', '开除'),
-        ('无', '无'),
-    )
-    politic_affir = models.CharField('政纪处分', max_length=20,
-                                     choices=politic_choices)
+    affair = models.CharField('纪律处分', max_length=20, choices=affairs_choices, null=True, blank=True)
     is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, default='是')
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
+    origin = models.CharField('信息来源', max_length=10, choices=origin_choices, default='市委组织部')
 
     def __str__(self):
         return self.officer.name
@@ -313,6 +318,7 @@ class VetoAffair(models.Model):
     is_influence = models.CharField('是否影响使用', max_length=4, choices=yes_or_no_choices, default='是', blank=True)
     start_time = models.DateField('影响起始时间', null=True, blank=True)
     end_time = models.DateField('影响终止时间', null=True, blank=True)
+    origin = models.CharField('信息来源', max_length=10, choices=origin_choices, default='市委组织部')
 
 
     def __str__(self):
