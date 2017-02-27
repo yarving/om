@@ -4,6 +4,14 @@ from officers.models import Officer, Choice, Assessment, PersonalEvent, \
     EconomicReview, PetitionReport, OrganizeProcess, PartyAffair, VetoAffair
 
 
+def export_csv(modeladmin, request, queryset):
+    import csv
+    from django.utils.encoding import smart_str
+
+    return ''
+export_csv.short_description = "导出为CSV"
+
+
 class ChoiceInline(admin.TabularInline):
     """docstring for ChoiceInline."""
     model = Choice
@@ -78,6 +86,7 @@ class OfficerAdmin(admin.ModelAdmin):
     list_filter = ['pub_date']
     search_fields = ['name']
     date_hierarchy = 'pub_date'
+    actions = [export_csv, ]
 
 # register Officer page
 admin.site.register(Officer, OfficerAdmin)
