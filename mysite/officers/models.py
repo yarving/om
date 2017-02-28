@@ -71,10 +71,10 @@ class Officer(models.Model):
     )
     id_number = models.CharField('身份证号', max_length=18, default='无')
     job_title = models.CharField('工作单位及职务', max_length=50, null=True)
-    full_time_edu = models.CharField('全日制学历', max_length=10, null=True)
-    full_time_deg = models.CharField('全日制学位', max_length=10, null=True)
-    part_time_edu = models.CharField('在职学历', max_length=10, null=True)
-    part_time_deg = models.CharField('在职学位', max_length=10, null=True)
+    full_time_edu = models.CharField('全日制学历', max_length=10, null=True, default='大学')
+    full_time_deg = models.CharField('全日制学位', max_length=10, null=True, default='未知')
+    part_time_edu = models.CharField('在职学历', max_length=10, null=True, default='未知')
+    part_time_deg = models.CharField('在职学位', max_length=10, null=True, default='未知')
 
     def __str__(self):
         return self.name
