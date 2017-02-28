@@ -78,7 +78,7 @@ class OfficerAdmin(admin.ModelAdmin):
                PartyAffairInline, VetoAffairInline]
     list_display = ('name', 'gender', 'birthday', 'is_party', 'party_time',
                     'job_time', 'native', 'nation', 'duty_level',
-                    'job_title', 'pub_date', 'was_able_promotion')
+                    'job_title', 'was_able_promotion')
     from officers.filters import PromotionFilter
     list_filter = ['pub_date', PromotionFilter]
     search_fields = ['name']

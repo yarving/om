@@ -87,7 +87,7 @@ class Officer(models.Model):
 
     was_able_promotion.admin_order_field = 'forbidden_start'
     was_able_promotion.boolean = True
-    was_able_promotion.short_description = '是否可提拔?'
+    was_able_promotion.short_description = '是否影响使用?'
 
     class Meta:
         verbose_name = '干部'
